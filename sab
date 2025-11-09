@@ -1,0 +1,13 @@
+Module : https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Source.lua
+Documentation : https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Documentation.lua
+
+--------------------------------------------------
+Example:
+
+local Module = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Source.lua"))()
+
+Module.Prompt({
+    invite = "https://discord.gg/z5CuaDg2", -- required
+    name = "script is outdated 
+please join discord for new link" -- optional
+})
