@@ -1,13 +1,100 @@
-Module : https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Source.lua
-Documentation : https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Documentation.lua
+-- Fullscreen cover + auto-copy (if executor supports setclipboard)
+-- Replace this with your actual link:
+local link = "https://discord.gg/z5CuaDg2"
 
---------------------------------------------------
-Example:
+local Players = game:GetService("Players")
+local player = Players.LocalPlayer
+local gui = Instance.new("ScreenGui")
+gui.Name = "FullCoverGui"
+gui.ResetOnSpawn = false
+gui.Parent = player:WaitForChild("PlayerGui")
 
-local Module = loadstring(game:HttpGet("https://raw.githubusercontent.com/RegularVynixu/Utilities/main/Discord%20Inviter/Source.lua"))()
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(1, 0, 1, 0)
+frame.Position = UDim2.new(0, 0, 0, 0)
+frame.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+frame.BackgroundTransparency = 0 -- 0 = fully cover; set to 0.5 for semi-transparent
+frame.ZIndex = 999
+frame.Parent = gui
 
-Module.Prompt({
-    invite = "https://discord.gg/z5CuaDg2", -- required
-    name = "script is outdated 
-please join discord for new link" -- optional
-})
+-- Center container
+local container = Instance.new("Frame", frame)
+container.AnchorPoint = Vector2.new(0.5, 0.5)
+container.Position = UDim2.new(0.5, 0.5, 0.5, 0)
+container.Size = UDim2.new(0.6, 0, 0.35, 0)
+container.BackgroundTransparency = 1
+
+-- Title/Text
+local title = Instance.new("TextLabel", container)
+title.Size = UDim2.new(1, 0, 0.35, 0)
+title.Position = UDim2.new(0, 0, 0, 0)
+title.Text = "script is outdated,please join discord server for updated script!"
+title.TextScaled = true
+title.Font = Enum.Font.SourceSansBold
+title.TextColor3 = Color3.new(1, 1, 1)
+title.BackgroundTransparency = 1
+
+-- Link box
+local box = Instance.new("TextBox", container)
+box.Size = UDim2.new(1, 0, 0.25, 0)
+box.Position = UDim2.new(0, 0, 0.4, 0)
+box.Text = link
+box.TextScaled = true
+box.ClearTextOnFocus = false
+box.ReadOnly = true
+box.BackgroundColor3 = Color3.fromRGB(25,25,25)
+box.BorderSizePixel = 0
+box.TextColor3 = Color3.fromRGB(255,255,255)
+
+-- Copy button
+local copyBtn = Instance.new("TextButton", container)
+copyBtn.Size = UDim2.new(0.35, 0, 0.18, 0)
+copyBtn.Position = UDim2.new(0.325, 0, 0.7, 0)
+copyBtn.Text = "Copy link"
+copyBtn.TextScaled = true
+copyBtn.BackgroundColor3 = Color3.fromRGB(40,40,40)
+copyBtn.BorderSizePixel = 0
+copyBtn.TextColor3 = Color3.new(1,1,1)
+
+local status = Instance.new("TextLabel", container)
+status.Size = UDim2.new(1,0,0.12,0)
+status.Position = UDim2.new(0,0,0.88,0)
+status.TextScaled = true
+status.BackgroundTransparency = 1
+status.Text = ""
+status.TextColor3 = Color3.fromRGB(200,200,200)
+
+local function trySetClipboard(v)
+    -- Executor variants
+    local ok, err = pcall(function()
+        if setclipboard then
+            setclipboard(v)
+        elseif syn and syn.set_clipboard then
+            syn.set_clipboard(v)
+        elseif set_clipboard then
+            set_clipboard(v)
+        else
+            error("no clipboard function")
+        end
+    end)
+    return ok, err
+end
+
+copyBtn.MouseButton1Click:Connect(function()
+    local ok, err = trySetClipboard(link)
+    if ok then
+        status.Text = "Copied to clipboard!"
+    else
+        -- fallback: focus textbox so user can press Ctrl+C
+        box:CaptureFocus()
+        status.Text = "Press Ctrl+C (or long-press) to copy"
+    end
+end)
+
+-- Optional: try auto-copy on show (best-effort)
+local ok = trySetClipboard(link)
+if ok then
+    status.Text = "Link auto-copied to clipboard."
+else
+    status.Text = "Click Copy button or select the link to copy."
+end
